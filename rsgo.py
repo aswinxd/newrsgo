@@ -47,7 +47,7 @@ def edit_final_summary_image(total_winnings, round_results):
     final_profits_pos = (40, 500)
     rounds_start_pos = 200  
     round_spacing = 10 
-    draw.text((50, 10), "Aviator Signal Reports", font=font, fill="white")
+    draw.text((50, 10), "cricket Signal Reports", font=font, fill="white")
     total_winnings_text = f"₹{total_winnings}"
     total_winnings_box = draw.textbbox((200, 50), total_winnings_text, font=font)
     draw.rectangle(total_winnings_box, fill="black")
