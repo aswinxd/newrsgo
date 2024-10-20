@@ -47,9 +47,9 @@ def edit_final_summary_image(total_winnings, round_results):
 
     # Positions for text and rectangles
     summary_pos = (50, 50)  
-    final_profits_pos = (50, 500)
-    rounds_start_pos = 150  
-    round_spacing = 20  
+    final_profits_pos = (40, 500)
+    rounds_start_pos = 10  
+    round_spacing = 100  
 
     # Draw the title
     draw.text((50, 10), "Aviator Signal Reports", font=font, fill="white")
