@@ -25,7 +25,7 @@ def edit_image(multiplier, winnings):
     winnings_pos = (480, 86)  
     draw.text(multiplier_pos, f"{multiplier}x", font=font, fill="white")
     draw.text(winnings_pos, f"₹{winnings}", font=font, fill="white")
-    edited_image_path = "rspg_edd.jpg"
+    edikd_image_path = "rspg_edd.jpg"
     img.save(edikd_image_path)
     return edikd_image_path
     
@@ -73,7 +73,7 @@ def edit_final_summary_image(total_winnings, round_results):
     draw.text((50, 650), final_message_text, font=font, fill="white")
 
     # Save the edited image
-    edited_image_path = f"summary_ed.jpg"
+    edd_image_path = f"summary_ed.jpg"
     img.save(edd_image_path)
     return edd_image_path
 
