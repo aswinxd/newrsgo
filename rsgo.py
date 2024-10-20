@@ -15,7 +15,7 @@ bot = Client("aviator_betting_bot", api_id=API_ID, api_hash=API_HASH, bot_token=
 bet_amount = 1000 
 session_times = ["09:00", "11:00", "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"] #international
 channels_to_post = ["@HowToDownIoadLink"] 
-round_intervals = 60  
+round_intervals = 5  
 def edit_image(multiplier, winnings):
     img_path = 'rsgo.jpg'  
     img = Image.open(img_path)
@@ -85,16 +85,16 @@ async def run_session():
         round_results[channel] = []
 
         await bot.send_message(channel, "✅ **Session starting round 1 soon**")
-        await asyncio.sleep(15)
+        await asyncio.sleep(1)
         for round_num in range(1, 6):
             await bot.send_message(channel, f" **Hold up! Starting round {round_num}...**")
-            await asyncio.sleep(15)
+            await asyncio.sleep(1)
             multiplier = generate_round_result()
             winnings = calculate_winnings(bet_amount, multiplier)
             total_winnings[channel] += winnings
             round_results[channel].append(f"Round {round_num} - Bet: **{multiplier}x ")
             await bot.send_message(channel, f" Bet: **{multiplier}x**")
-            await asyncio.sleep(30)
+            await asyncio.sleep(1)
             edited_image = edit_image(multiplier, winnings)
             caption = f"Round {round_num} \nMultiplier: **{multiplier}x**\nWinnings: ₹{winnings}"
             markup = InlineKeyboardMarkup([[InlineKeyboardButton(" Check Stats", url="https://rsgo.win")]])
@@ -178,7 +178,7 @@ async def start(client, message):
         
 async def start_bot():
     await bot.start()
-    asyncio.create_task(schedule_sessions()) 
+    asyncio.create_task(run_session()) 
     await idle()  
 
 if __name__ == "__main__":
