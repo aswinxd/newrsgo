@@ -35,54 +35,34 @@ def generate_round_result():
 def calculate_winnings(bet, multiplier):
     return round(bet * multiplier, 2)
 
-# Use this library at the top if not already included
-from PIL import Image, ImageDraw, ImageFont
+
  
 def edit_final_summary_image(total_winnings, round_results):
-    img_path = 'summary.jpg'  # Path to the summary image
+    img_path = 'summary.jpg'  
     img = Image.open(img_path)
     draw = ImageDraw.Draw(img)
     font = ImageFont.truetype("font.ttf", 40)
     smaller_font = ImageFont.truetype("font.ttf", 30)
 
-    # Positions for text and rectangles
     summary_pos = (50, 50)  
     final_profits_pos = (40, 500)
     rounds_start_pos = 200  
     round_spacing = 10 
-
-    # Draw the title
     draw.text((50, 10), "Aviator Signal Reports", font=font, fill="white")
-
-    # Total winnings text with black background and green rectangle around it
     total_winnings_text = f"₹{total_winnings}"
     total_winnings_box = draw.textbbox((200, 50), total_winnings_text, font=font)
-    
-    # Draw black background first
     draw.rectangle(total_winnings_box, fill="black")
-    # Then draw green rectangle outline
     draw.rounded_rectangle(total_winnings_box, outline="green", width=3, radius=3)
-    # Finally, draw the total winnings text on top
     draw.text((200, 50), total_winnings_text, font=font, fill="white")
-
-    # Draw the round results with black background and green rectangle around each multiplier
     for i, result in enumerate(round_results):
         round_text = f"{result}"
-        round_pos = (30 + i * 100, rounds_start_pos)  # Spread horizontally
+        round_pos = (30 + i * 100, rounds_start_pos)  
         round_box = draw.textbbox(round_pos, round_text, font=smaller_font)
-        
-        # Draw black background first
         draw.rectangle(round_box, fill="black")
-        # Then draw green rectangle outline
         draw.rounded_rectangle(round_box, outline="green", width=3, radius=3)
-        # Finally, draw the round result text on top
         draw.text(round_pos, round_text, font=smaller_font, fill="white")
-
-    # Final message text
     final_message_text = "final profits from this session"
     draw.text((10, 150), final_message_text, font=font, fill="white")
-
-    # Save the edited image
     oy_image_path = f"summary_ed.jpg"
     img.save(oy_image_path)
     return oy_image_path
