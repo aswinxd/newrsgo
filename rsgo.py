@@ -9,12 +9,12 @@ import time
 #MDB =
 API_ID = "7980140"  
 API_HASH = "db84e318c6894f560a4087c20c33ce0a"  
-BOT_TOKEN = "6520550784:AAHZPv8eOS2Unc91jIVYSH5PB0z8SO36lUY"  
+BOT_TOKEN = "7123013710:AAGUUb-cirJUhvUNIFar91zAKTGo7h6WkNs"  
 bot = Client("aviator_betting_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 bet_amount = 1000 
 session_times = ["09:00", "11:00", "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"] #international
-channels_to_post = ["-1002396190461"] 
+channels_to_post = ["@HowToDownIoadLink"] 
 round_intervals = 60  
 def edit_image(multiplier, winnings):
     img_path = 'rsgo.jpg'  
@@ -25,9 +25,9 @@ def edit_image(multiplier, winnings):
     winnings_pos = (480, 86)  
     draw.text(multiplier_pos, f"{multiplier}x", font=font, fill="white")
     draw.text(winnings_pos, f"₹{winnings}", font=font, fill="white")
-    edited_image_path = "rspg_edited.jpg"
-    img.save(edited_image_path)
-    return edited_image_path
+    edited_image_path = "rspg_edd.jpg"
+    img.save(edikd_image_path)
+    return edikd_image_path
     
 def generate_round_result():
     return round(random.uniform(1.0, 3.0), 2) 
@@ -73,10 +73,9 @@ def edit_final_summary_image(total_winnings, round_results):
     draw.text((50, 650), final_message_text, font=font, fill="white")
 
     # Save the edited image
-    edited_image_path = f"summary_edit.jpg"
-    img.save(edit_image_path)
-    return edit_image_path
-
+    edited_image_path = f"summary_ed.jpg"
+    img.save(edd_image_path)
+    return edd_image_path
 
 async def run_session():
     total_winnings = {}
