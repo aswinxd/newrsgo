@@ -61,9 +61,9 @@ def edit_final_summary_image(total_winnings, round_results):
     # Draw black background first
     draw.rectangle(total_winnings_box, fill="black")
     # Then draw green rectangle outline
-    draw.rounded_rectangle(total_winnings_box, outline="green", width=5, radius=15)
+    draw.rounded_rectangle(total_winnings_box, outline="green", width=7, radius=10)
     # Finally, draw the total winnings text on top
-    draw.text((200, 50), total_winnings_text, font=font, fill="white")
+    draw.text((200, 40), total_winnings_text, font=font, fill="white")
 
     # Draw the round results with black background and green rectangle around each multiplier
     for i, result in enumerate(round_results):
