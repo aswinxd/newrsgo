@@ -68,7 +68,7 @@ def edit_final_summary_image(total_winnings, round_results):
     # Draw the round results with black background and green rectangle around each multiplier
     for i, result in enumerate(round_results):
         round_text = f"{result}"
-        round_pos = (200 + i * 200, rounds_start_pos)  # Spread horizontally
+        round_pos = (20 + i * 20, rounds_start_pos)  # Spread horizontally
         round_box = draw.textbbox(round_pos, round_text, font=smaller_font)
         
         # Draw black background first
