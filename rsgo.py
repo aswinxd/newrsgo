@@ -36,7 +36,6 @@ def calculate_winnings(bet, multiplier):
     return round(bet * multiplier, 2)
 
 
- 
 def edit_final_summary_image(total_winnings, round_results):
     img_path = 'summary.jpg'  
     img = Image.open(img_path)
@@ -66,6 +65,7 @@ def edit_final_summary_image(total_winnings, round_results):
     oy_image_path = f"summary_ed.jpg"
     img.save(oy_image_path)
     return oy_image_path
+
 
 async def run_session():
     total_winnings = {}
