@@ -80,7 +80,7 @@ def edit_final_summary_image(total_winnings, round_results):
 
     # Final message text
     final_message_text = "final profits from this session"
-    draw.text((30, 150), final_message_text, font=font, fill="white")
+    draw.text((10, 150), final_message_text, font=font, fill="white")
 
     # Save the edited image
     oy_image_path = f"summary_ed.jpg"
