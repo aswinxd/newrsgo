@@ -48,7 +48,7 @@ def edit_final_summary_image(total_winnings, round_results):
     # Positions for text and rectangles
     summary_pos = (50, 50)  
     final_profits_pos = (40, 500)
-    rounds_start_pos = 50  
+    rounds_start_pos = 200  
     round_spacing = 10 
 
     # Draw the title
@@ -63,7 +63,7 @@ def edit_final_summary_image(total_winnings, round_results):
     # Then draw green rectangle outline
     draw.rounded_rectangle(total_winnings_box, outline="green", width=5, radius=15)
     # Finally, draw the total winnings text on top
-    draw.text((200, 40), total_winnings_text, font=font, fill="white")
+    draw.text((200, 50), total_winnings_text, font=font, fill="white")
 
     # Draw the round results with black background and green rectangle around each multiplier
     for i, result in enumerate(round_results):
@@ -80,7 +80,7 @@ def edit_final_summary_image(total_winnings, round_results):
 
     # Final message text
     final_message_text = "FINAL PROFITS FROM THIS SESSION"
-    draw.text((30, 100), final_message_text, font=font, fill="white")
+    draw.text((30, 1600), final_message_text, font=font, fill="white")
 
     # Save the edited image
     oy_image_path = f"summary_edited.jpg"
