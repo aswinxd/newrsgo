@@ -54,18 +54,28 @@ def edit_final_summary_image(total_winnings, round_results):
     # Draw the title
     draw.text((50, 10), "Aviator Signal Reports", font=font, fill="white")
 
-    # Total winnings text with a rectangle around it
+    # Total winnings text with black background and green rectangle around it
     total_winnings_text = f"₹{total_winnings}"
     total_winnings_box = draw.textbbox((200, 50), total_winnings_text, font=font)
-    draw.rounded_rectangle(total_winnings_box, outline="green", width=5, radius=15)  # Green rectangle
+    
+    # Draw black background first
+    draw.rectangle(total_winnings_box, fill="black")
+    # Then draw green rectangle outline
+    draw.rounded_rectangle(total_winnings_box, outline="green", width=5, radius=15)
+    # Finally, draw the total winnings text on top
     draw.text((200, 50), total_winnings_text, font=font, fill="white")
 
-    # Draw the round results with rectangles around each multiplier
+    # Draw the round results with black background and green rectangle around each multiplier
     for i, result in enumerate(round_results):
         round_text = f"{result}"
         round_pos = (200 + i * 200, rounds_start_pos)  # Spread horizontally
         round_box = draw.textbbox(round_pos, round_text, font=smaller_font)
-        draw.rounded_rectangle(round_box, outline="green", width=5, radius=15)  # Rectangle around the multiplier
+        
+        # Draw black background first
+        draw.rectangle(round_box, fill="black")
+        # Then draw green rectangle outline
+        draw.rounded_rectangle(round_box, outline="green", width=5, radius=15)
+        # Finally, draw the round result text on top
         draw.text(round_pos, round_text, font=smaller_font, fill="white")
 
     # Final message text
@@ -73,9 +83,9 @@ def edit_final_summary_image(total_winnings, round_results):
     draw.text((50, 650), final_message_text, font=font, fill="white")
 
     # Save the edited image
-    edd_image_path = f"summary_ed.jpg"
-    img.save(edd_image_path)
-    return edd_image_path
+    oy_image_path = f"summary_edited.jpg"
+    img.save(oy_image_path)
+    return oy_image_path
 
 async def run_session():
     total_winnings = {}
