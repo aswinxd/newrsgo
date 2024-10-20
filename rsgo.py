@@ -61,7 +61,7 @@ def edit_final_summary_image(total_winnings, round_results):
     # Draw black background first
     draw.rectangle(total_winnings_box, fill="black")
     # Then draw green rectangle outline
-    draw.rounded_rectangle(total_winnings_box, outline="green", width=10, radius=3)
+    draw.rounded_rectangle(total_winnings_box, outline="green", width=3, radius=3)
     # Finally, draw the total winnings text on top
     draw.text((200, 50), total_winnings_text, font=font, fill="white")
 
@@ -74,7 +74,7 @@ def edit_final_summary_image(total_winnings, round_results):
         # Draw black background first
         draw.rectangle(round_box, fill="black")
         # Then draw green rectangle outline
-        draw.rounded_rectangle(round_box, outline="green", width=10, radius=3)
+        draw.rounded_rectangle(round_box, outline="green", width=3, radius=3)
         # Finally, draw the round result text on top
         draw.text(round_pos, round_text, font=smaller_font, fill="white")
 
