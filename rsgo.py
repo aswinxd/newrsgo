@@ -6,6 +6,9 @@ from pyrogram.errors import PeerIdInvalid
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from PIL import Image, ImageDraw, ImageFont
 import time
+from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+import asyncio
 #MDB =
 API_ID = "7980140"  
 API_HASH = "db84e318c6894f560a4087c20c33ce0a"  
@@ -165,6 +168,146 @@ async def start(client, message):
         await message.reply("Welcome.")
     else:
         await message.reply("Welcome.")
+
+post_data = {}
+
+ADMIN_USER_IDS = [1137799257] 
+
+# /send command to start the post creation process
+@bot.on_message(filters.command("send") & filters.user(ADMIN_USER_IDS))
+async def send_post(client, message):
+    chat_id = message.chat.id
+    post_data[chat_id] = {"image": None, "caption": None, "buttons": [], "interval": None}  # Initialize empty post data
+
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("📝 Create Post", callback_data="create_post")],
+        [InlineKeyboardButton("❌ Cancel", callback_data="cancel_post")]
+    ])
+    await message.reply("Admin Panel: Use this to create and manage posts.", reply_markup=markup)
+
+# Create Post Menu
+@bot.on_callback_query(filters.regex("create_post"))
+async def create_post_menu(client, callback_query):
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🖼️ Add Image", callback_data="add_image")],
+        [InlineKeyboardButton("✏️ Add Caption", callback_data="add_caption")],
+        [InlineKeyboardButton("🔗 Add Button", callback_data="add_button")],
+        [InlineKeyboardButton("👁️ Preview", callback_data="preview_post")],
+        [InlineKeyboardButton("📅 Schedule Post", callback_data="schedule_post")],
+        [InlineKeyboardButton("📤 Send Post", callback_data="send_post")],
+        [InlineKeyboardButton("❌ Cancel", callback_data="cancel_post")]
+    ])
+    await callback_query.message.edit_text("Create and customize your post:", reply_markup=markup)
+
+# Cancel post creation
+@bot.on_callback_query(filters.regex("cancel_post"))
+async def cancel_post_creation(client, callback_query):
+    chat_id = callback_query.message.chat.id
+    if chat_id in post_data:
+        del post_data[chat_id]  # Remove the post data for this chat
+    await callback_query.message.edit_text("❌ Post creation cancelled.")
+
+# Add Image
+@bot.on_callback_query(filters.regex("add_image"))
+async def add_image(client, callback_query):
+    await callback_query.message.edit_text("Please send the image you want to add to the post.")
+
+@bot.on_message(filters.photo & filters.user(ADMIN_USER_IDS))
+async def receive_image(client, message):
+    chat_id = message.chat.id
+    post_data[chat_id]["image"] = message.photo.file_id
+    await message.reply("✅ Image added to the post.")
+
+# Add Caption
+@bot.on_callback_query(filters.regex("add_caption"))
+async def add_caption(client, callback_query):
+    await callback_query.message.edit_text("Please send the caption you want to add to the post.")
+
+@bot.on_message(filters.text & filters.user(ADMIN_USER_IDS))
+async def receive_caption(client, message):
+    chat_id = message.chat.id
+    post_data[chat_id]["caption"] = message.text
+    await message.reply("✅ Caption added to the post.")
+
+# Add Button
+@bot.on_callback_query(filters.regex("add_button"))
+async def add_button(client, callback_query):
+    await callback_query.message.edit_text("Please send the button text and URL in this format:\n`Text - URL`")
+
+@bot.on_message(filters.text & filters.user(ADMIN_USER_IDS))
+async def receive_button(client, message):
+    chat_id = message.chat.id
+    try:
+        text, url = message.text.split(" - ")
+        post_data[chat_id]["buttons"].append(InlineKeyboardButton(text, url=url))
+        await message.reply("✅ Button added.")
+    except ValueError:
+        await message.reply("❌ Invalid format. Use: `Text - URL`.")
+
+# Preview Post
+@bot.on_callback_query(filters.regex("preview_post"))
+async def preview_post(client, callback_query):
+    chat_id = callback_query.message.chat.id
+    data = post_data.get(chat_id, {})
+
+    if data["image"]:
+        await client.send_photo(
+            chat_id, 
+            data["image"], 
+            caption=data["caption"], 
+            reply_markup=InlineKeyboardMarkup([[btn] for btn in data["buttons"]])
+        )
+    else:
+        await callback_query.message.edit_text("No image added. Add an image or caption to preview.")
+
+# Schedule Post
+@bot.on_callback_query(filters.regex("schedule_post"))
+async def schedule_post(client, callback_query):
+    await callback_query.message.edit_text("Please provide the interval in minutes (e.g., `30` for 30 minutes).")
+
+@bot.on_message(filters.text & filters.user(ADMIN_USER_IDS))
+async def set_schedule(client, message):
+    chat_id = message.chat.id
+    try:
+        interval = int(message.text) * 60  # Convert minutes to seconds
+        post_data[chat_id]["interval"] = interval
+        await message.reply(f"✅ Post will be sent every {message.text} minutes.")
+    except ValueError:
+        await message.reply("❌ Invalid number. Please send a valid number of minutes.")
+
+# Send Post
+@bot.on_callback_query(filters.regex("send_post"))
+async def send_post(client, callback_query):
+    chat_id = callback_query.message.chat.id
+    data = post_data.get(chat_id, {})
+
+    if "interval" in data and data["interval"]:
+        asyncio.create_task(send_post_at_intervals(client, chat_id, data))
+    else:
+        await send_post_now(client, chat_id, data)
+
+    await callback_query.message.edit_text("✅ Post has been sent.")
+
+# Send post immediately
+async def send_post_now(client, chat_id, data):
+    if data["image"]:
+        await client.send_photo(
+            chat_id, 
+            data["image"], 
+            caption=data["caption"], 
+            reply_markup=InlineKeyboardMarkup([[btn] for btn in data["buttons"]])
+        )
+    else:
+        await client.send_message(chat_id, data["caption"], reply_markup=InlineKeyboardMarkup([[btn] for btn in data["buttons"]]))
+
+# Send post at intervals
+async def send_post_at_intervals(client, chat_id, data):
+    interval = data["interval"]
+    while True:
+        await send_post_now(client, chat_id, data)
+        await asyncio.sleep(interval)
+
+bot.run()
         
 async def start_bot():
     await bot.start()
