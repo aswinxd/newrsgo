@@ -210,7 +210,10 @@ async def cancel_post_creation(client, callback_query):
 # Add Image
 @bot.on_callback_query(filters.regex("add_image"))
 async def add_image(client, callback_query):
-    await callback_query.message.edit_text("Please send the image you want to add to the post.")
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("↩️ Back to Menu", callback_data="back_to_menu")]
+    ])
+    await callback_query.message.edit_text("Please send the image you want to add to the post.", reply_markup=markup)
 
 @bot.on_message(filters.photo & filters.user(ADMIN_USER_IDS))
 async def receive_image(client, message):
@@ -221,7 +224,10 @@ async def receive_image(client, message):
 # Add Caption
 @bot.on_callback_query(filters.regex("add_caption"))
 async def add_caption(client, callback_query):
-    await callback_query.message.edit_text("Please send the caption you want to add to the post.")
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("↩️ Back to Menu", callback_data="back_to_menu")]
+    ])
+    await callback_query.message.edit_text("Please send the caption you want to add to the post.", reply_markup=markup)
 
 @bot.on_message(filters.text & filters.user(ADMIN_USER_IDS))
 async def receive_caption(client, message):
@@ -232,7 +238,10 @@ async def receive_caption(client, message):
 # Add Button
 @bot.on_callback_query(filters.regex("add_button"))
 async def add_button(client, callback_query):
-    await callback_query.message.edit_text("Please send the button text and URL in this format:\n`Text - URL`")
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("↩️ Back to Menu", callback_data="back_to_menu")]
+    ])
+    await callback_query.message.edit_text("Please send the button text and URL in this format:\n`Text - URL`", reply_markup=markup)
 
 @bot.on_message(filters.text & filters.user(ADMIN_USER_IDS))
 async def receive_button(client, message):
@@ -263,7 +272,57 @@ async def preview_post(client, callback_query):
 # Schedule Post
 @bot.on_callback_query(filters.regex("schedule_post"))
 async def schedule_post(client, callback_query):
-    await callback_query.message.edit_text("Please provide the interval in minutes (e.g., `30` for 30 minutes).")
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("↩️ Back to Menu", callback_data="back_to_menu")]
+    ])
+    await callback_query.message.edit_text("Please provide the interval in minutes (e.g., `30` for 30 minutes).", reply_markup=markup)
+
+@bot.on_message(filters.text & filters.user(ADMIN_USER_IDS))
+async def set_schedule(client, message):
+    chat_id = message.chat.id
+    try:
+        interval = int(message.text) * 60  # Convert minutes to seconds
+        post_data[chat_id]["interval"] = interval
+        await message.reply(f"✅ Post will be sent every {message.text} minutes.")
+    except ValueError:
+        await message.reply("❌ Invalid number. Please send a valid number of minutes.")
+
+# Send Post
+@bot.on_callback_query(filters.regex("send_post"))
+async def send_post(client, callback_query):
+    chat_id = callback_query.message.chat.id
+    data = post_data.get(chat_id, {})
+
+    if "interval" in data and data["interval"]:
+        asyncio.create_task(send_post_at_intervals(client, chat_id, data))
+    else:
+        await send_post_now(client, chat_id, data)
+
+    await callback_query.message.edit_text("✅ Post has been sent.")
+
+# Send post immediately
+async def send_post_now(client, chat_id, data):
+    if data["image"]:
+        await client.send_photo(
+            chat_id, 
+            data["image"], 
+            caption=data["caption"], 
+            reply_markup=InlineKeyboardMarkup([[btn] for btn in data["buttons"]])
+        )
+    else:
+        await client.send_message(chat_id, data["caption"], reply_markup=InlineKeyboardMarkup([[btn] for btn in data["buttons"]]))
+
+# Send post at intervals
+async def send_post_at_intervals(client, chat_id, data):
+    interval = data["interval"]
+    while True:
+        await send_post_now(client, chat_id, data)
+        await asyncio.sleep(interval)
+
+# Back to Menu
+@bot.on_callback_query(filters.regex("back_to_menu"))
+async def back_to_menu(client, callback_query):
+    await create_post_menu(client, callback_query)
 
 @bot.on_message(filters.text & filters.user(ADMIN_USER_IDS))
 async def set_schedule(client, message):
