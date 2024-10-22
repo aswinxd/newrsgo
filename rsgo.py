@@ -105,54 +105,6 @@ async def run_session():
         )
         await bot.send_photo(channel, final_summary_image, caption=final_message, reply_markup=markup)
 
-
-    
-   #    ''' final_message = (
-        #    f" **Session Summary**: \n"
-     #       f"Total winnings after 5 rounds: ₹{total_winnings[channel]}\n"
-   ###      await bot.send_photo(channel, final_summary_image, caption=final_message, reply_markup=markup)'''
-
-
-'''async def run_session():
-    total_winnings = {} 
-    round_results = {}  
-
-    for channel in channels_to_post:
-        total_winnings[channel] = 0
-        round_results[channel] = []  
-        await bot.send_message(channel, "✅ **Session starting round 1 soon**")
-        await asyncio.sleep(15)
-
-        for round_num in range(1, 6):
-            await bot.send_message(channel, f"🚀 **Hold up! Starting round {round_num}...**")
-            await asyncio.sleep(10)
-
-            multiplier = generate_round_result()
-            winnings = calculate_winnings(bet_amount, multiplier)
-            total_winnings[channel] += winnings
-
-            round_results[channel].append(f"✅**Round {round_num}  ₹{winnings}**")
-
-            await bot.send_message(channel, f"🚀 Bet: **{multiplier}x**")
-            await asyncio.sleep(30)
-
-            edited_image = edit_image(multiplier, winnings)
-            caption = f"Round {round_num} 🚀\nMultiplier: **{multiplier}x**\nWinnings: ₹{winnings}"
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("📊 Check Stats", url="https://rsgo.win")]])
-            await bot.send_photo(channel, edited_image, caption=caption, reply_markup=markup)
-
-            await asyncio.sleep(round_intervals)
-
-        final_summary = "\n".join(round_results[channel])
-        final_message = (
-            f"📊 **Session Summary**: \n"
-            f"{final_summary}\n"
-            f"Total winnings after 5 rounds: ₹{total_winnings[channel]}\n"
-            f"Session ended."
-        )
-        await bot.send_message(channel, final_message, reply_markup=markup)'''
-
-         
 async def schedule_sessions():
     while True:
         now = datetime.now().strftime("%H:%M")
@@ -298,7 +250,7 @@ async def preview_post(client, callback_query):
     else:
         await callback_query.message.edit_text("No image added. Add an image or caption to preview.")
 
-async def send_post_to_channels(client, data):
+async def send_post_to_channels(client, chat_id, data):
     for channel_id in channels_to_post:
         if data["image"]:
             await client.send_photo(
