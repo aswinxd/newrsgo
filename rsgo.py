@@ -298,6 +298,22 @@ async def preview_post(client, callback_query):
     else:
         await callback_query.message.edit_text("No image added. Add an image or caption to preview.")
 
+async def send_post_to_channels(client, data):
+    for channel_id in channels_to_post:
+        if data["image"]:
+            await client.send_photo(
+                channel_id,
+                data["image"],
+                caption=data["caption"],
+                reply_markup=InlineKeyboardMarkup([[btn] for btn in data["buttons"]])
+            )
+        else:
+            await client.send_message(
+                channel_id,
+                data["caption"],
+                reply_markup=InlineKeyboardMarkup([[btn] for btn in data["buttons"]])
+            )
+
 # Send Post
 @bot.on_callback_query(filters.regex("send_post"))
 async def send_post(client, callback_query):
@@ -307,27 +323,16 @@ async def send_post(client, callback_query):
     if "interval" in data and data["interval"]:
         asyncio.create_task(send_post_at_intervals(client, chat_id, data))
     else:
-        await send_post_now(client, chat_id, data)
+        await send_post_to_channels(client, chat_id, data)
 
     await callback_query.message.edit_text("✅ Post has been sent.")
 
-# Send post immediately
-async def send_post_now(client, chat_id, data):
-    if data["image"]:
-        await client.send_photo(
-            chat_id, 
-            data["image"], 
-            caption=data["caption"], 
-            reply_markup=InlineKeyboardMarkup([[btn] for btn in data["buttons"]])
-        )
-    else:
-        await client.send_message(chat_id, data["caption"], reply_markup=InlineKeyboardMarkup([[btn] for btn in data["buttons"]]))
 
 # Send post at intervals
 async def send_post_at_intervals(client, chat_id, data):
     interval = data["interval"]
     while True:
-        await send_post_now(client, chat_id, data)
+        await send_post_to_channels(client, chat_id, data)
         await asyncio.sleep(interval)
 
 # Back to Menu
